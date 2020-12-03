@@ -40,7 +40,7 @@
                         <a class="nav-link" href="/keyValueDelete">DEL </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">DEL VERS </a>
+                        <a class="nav-link" href="/keyValueDeleteVersion">DEL VERS </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">TEST AND SET </a>
@@ -63,39 +63,38 @@
                     </div>
                 </div>
 
-                <form method="POST">
+                <form>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Key</label>
-                        <input type="text" class="form-control" id="exampleInputEmail1" th:value="${message}">
+                        <label for="K_FIELD_NUMBER">Key</label>
+                        <input type="text" class="form-control" id="K_FIELD_NUMBER" th:value="${message}">
                     </div>
                     <!-- Será gerado aleatoriamente -->
 
                     <div class="row">
                         <div class="col-sm-4">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Timestamp</label>
-                                <input type="number" class="form-control" id="exampleInputEmail1" th:value="${message}"
+                                <label for="TS_FIELD_NUMBER">Timestamp</label>
+                                <input type="number" class="form-control" id="TS_FIELD_NUMBER" th:value="${message}"
                                     disabled>
                             </div>
                         </div>
                         <div class="col-sm-8">
                             <div class="form-group">
-                                <label for="exampleInputEmail1">Dados</label>
-                                <input type="text" class="form-control" id="exampleInputEmail1" th:value="${message}">
+                                <label for="D_FIELD_NUMBER">Dados</label>
+                                <input type="text" class="form-control" id="D_FIELD_NUMBER" th:value="${message}">
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="float:right">Salvar</button>
+                    <button class="btn btn-primary" style="float:right" onclick="setKeyValue()">Salvar</button>
                 </form>
                 <small id="emailHelp" class="form-text text-muted">
-                    Insere na hash table, não se esqueça que este método insere somente se não for duplicada a key</small>
+                    Insere na hash table, não se esqueça que este método insere somente se não for duplicada a
+                    key</small>
             </div>
         </div>
     </section>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
-    </script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
         integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
     </script>
@@ -105,7 +104,31 @@
     <script src="../static/js/sb-admin-2.min.js"></script>
 
     <script>
+        function setKeyValue() {
+            console.log();
+            var data = {}
+            data["K_FIELD_NUMBER"] = $("#K_FIELD_NUMBER").val();
 
+            $.ajax({
+                type: 'POST',
+                contentType: 'application/json',
+                url: '/api/search',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+
+               
+
+                },
+                error: function (e) {
+
+                 console.log("Error ajax setKeyValue()")
+
+                }
+            });
+        }
     </script>
 </body>
 
