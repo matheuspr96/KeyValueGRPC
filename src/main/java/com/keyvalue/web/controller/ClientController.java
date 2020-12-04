@@ -13,77 +13,86 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+// import jdk.javadoc.internal.doclets.toolkit.resources.doclets;
+
+// import jdk.nashorn.internal.runtime.Undefined;
 
 @Controller
 public class ClientController {
 
     ClientService clientService;
 
-    //#region EVENTOS
-    
+    // #region EVENTOS
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ModelAndView index(){
-        ModelAndView mv  = new ModelAndView("index");
+    public ModelAndView index() {
+        ModelAndView mv = new ModelAndView("index");
         return mv;
     }
 
-    @RequestMapping(value = "/keyValueDetails", method = RequestMethod.GET)
-    public String GetKeyValueDetails(){
-        return "keyValueForm";
+    @RequestMapping(value = "/keyValue", method = RequestMethod.GET)
+    public String GetKeyValueDetails() {
+        return "keyValueDetails";
     }
 
     @RequestMapping(value = "/keyValueNew", method = RequestMethod.GET)
-    public String GetKeyValueForm(){
+    public String GetKeyValueForm() {
         return "keyValueForm";
     }
 
     @RequestMapping(value = "/keyValueDelete", method = RequestMethod.GET)
-    public String GetKeyValueDelete(){
+    public String GetKeyValueDelete() {
         return "keyValueDel";
     }
 
     @RequestMapping(value = "/keyValueDeleteVersion", method = RequestMethod.GET)
-    public String GetKeyValueDeleteVer(){
+    public String GetKeyValueDeleteVer() {
         return "keyValueDelVer";
     }
 
-    //#endregion 
+    // #endregion
 
-    //#region OPERAÇÕES
+    // #region OPERAÇÕES
 
     @RequestMapping(value = "/client/{k}", method = RequestMethod.GET)
-    public ModelAndView Get(@PathVariable("k") int k)
-    {
-        ModelAndView mv = new ModelAndView("redirect:/keyValueDetails");  
+    public ModelAndView Get(@PathVariable("k") int k) {
+
         // clientService.get(k);
-        String message = "Consultar log de saída" + k;
-        mv.addObject("message", message);
-        System.out.println("--------------------------------------------->" + message);
+        System.out.println("GET METHOD : " + k);
+
+        ModelAndView mv = new ModelAndView("keyValueDetails");
+        mv.addObject("K_FIELD_NUMBER", 0);
+        mv.addObject("TS_FIELD_NUMBER", 0);
+        mv.addObject("D_FIELD_NUMBER", 0);
         return mv;
     }
 
     @RequestMapping(value = "/client", method = RequestMethod.POST)
-    public String Set(@ModelAttribute SetRequest setRequest){
-        //  clientService.set(setRequest.K_FIELD_NUMBER, setRequest.TS_FIELD_NUMBER, setRequest.D_FIELD_NUMBER);
-         return "redirect:/keyValueNew";
+    public String Set(@RequestParam("k") int k, @RequestParam("d") String d) {
+
+        // clientService.set(k, 0, d);
+        System.out.println("INSERT METHOD : " + k + " - " + d);
+        return "redirect:/client/" + k;
     }
 
-    @RequestMapping(value = "/client", method = RequestMethod.DELETE)
-    public String Del(DelRequest setRequest){
-
-        //  clientService.set(setRequest.K_FIELD_NUMBER, setRequest.TS_FIELD_NUMBER, setRequest.D_FIELD_NUMBER);
-         return "redirect:/keyValueDel";
+    @RequestMapping(value = "/client/delete", method = RequestMethod.DELETE)
+    public String Del(@RequestParam("k") int k) {
+        System.out.println("DELETE METHOD : " + k);
+        // clientService.del(k);
+        return "keyValueDel";
     }
 
-    @RequestMapping(value = "/client/ver/{k}", method = RequestMethod.DELETE)
-    public String DelVer(DelRequestVers setRequest){
+    @RequestMapping(value = "/client/delete/version", method = RequestMethod.DELETE)
+    public String DelVer(@RequestParam("k") int k, @RequestParam("vers") int vers) {
 
-        //  clientService.set(setRequest.K_FIELD_NUMBER, setRequest.TS_FIELD_NUMBER, setRequest.D_FIELD_NUMBER);
-         return "redirect:/keyValueDelVer";
+        //  clientService.delVers(setRequest.K_FIELD_NUMBER, setRequest.TS_FIELD_NUMBER,
+        System.out.println("DELETE VER METHOD : " + k + " - " + vers);
+        return "keyValueDelVer";
     }
 
-//#endregion
-   
+    // #endregion
+
 }

@@ -49,31 +49,44 @@
 
     <article>
 
-        <div class="card border-left-green" style="max-height: calc(100vh - 130px)">
-            <div class="row my-3 mx-1">
-                <div class="col-sm-6">
-                    <span style="color:grey" class="font-weight-light h4">Detalhe busca por chave</span>
-                </div>
-                <div class="col-sm-6 text-right">
-                 <button onclick='history.go(-1)' class="btn btn-succes-outline">Voltar</button>
-                </div>
-            </div>
+        <div class="container p-4" style="width: 60%;">
 
-            <div class="p-4">
-                <form>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Key</label>
-                        <input type="text" class="form-control" id="exampleInputEmail1" th:value="${message}">
+            <div class="card border-left-green" style="max-height: calc(100vh - 130px)">
+                <div class="row my-3 mx-1">
+                    <div class="col-sm-6">
+                        <span style="color:grey" class="font-weight-light h4">Detalhe busca por chave</span>
                     </div>
-                    <!-- <button type="submit" class="btn btn-primary">Buscar</button> -->
-                </form>
-                <div>
-
+                    <div class="col-sm-6 text-right">
+                        <button onclick='history.go(-1)' class="btn btn-outline-primary">Voltar</button>
+                    </div>
                 </div>
+
+                <div class="p-4">
+                    <form>
+                        <div class="form-group">
+                            <label for="K_FIELD_NUMBER">Key</label>
+                            <input type="text" class="form-control" id="K_FIELD_NUMBER" th:value="${K_FIELD_NUMBER}"
+                                disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="TS_FIELD_NUMBER">Timestamp</label>
+                            <input type="text" class="form-control" id="TS_FIELD_NUMBER" th:value="${TS_FIELD_NUMBER}"
+                                disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="D_FIELD_NUMBER">Dados</label>
+                            <input type="text" class="form-control" id="D_FIELD_NUMBER" th:value="${D_FIELD_NUMBER}"
+                                disabled>
+                        </div>
+                    </form>
+                    <div>
+
+                    </div>
+                </div>
+
             </div>
-
+            
         </div>
-
     </article>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
