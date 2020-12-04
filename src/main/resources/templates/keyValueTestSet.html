@@ -34,16 +34,16 @@
                         <a class="nav-link" href="#">Get <span class="sr-only">(current)</span></a>
                     </li> -->
                     <li class="nav-item">
-                        <a class="nav-link" href="/keyValueNew">SET </a>
+                        <a class="nav-link " href="#">SET </span> </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">DEL <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="/keyValueDelete">DEL </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/keyValueDeleteVersion">DEL VERS </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/keyValueTestSet">TEST AND SET </a>
+                        <a class="nav-link active" href="#">TEST AND SET <span class="sr-only">(current) </a>
                     </li>
                 </ul>
             </div>
@@ -54,7 +54,7 @@
             <div class="card border-left-primary p-3" style="max-height: calc(100vh - 130px)">
                 <div class="row my-3 mx-1">
                     <div class="col-sm-6">
-                        <span style="color:grey" class="font-weight-light h4">Remover chave</span>
+                        <span style="color:grey" class="font-weight-light h4">Test and SET</span>
                     </div>
                     <div class="col-sm-6 text-right">
                         <span class="material-icons">
@@ -65,20 +65,28 @@
 
                 <form>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Key</label>
-                        <input type="text" class="form-control" id="keyValueDel">
+                        <label for="K_FIELD_NUMBER">Key</label>
+                        <input type="text" class="form-control" id="K_FIELD_NUMBER">
                     </div>
                     <!-- Será gerado aleatoriamente -->
-                    <button class="btn btn-primary" style="float:right" onclick="getKeyValue()">Remover</button>
+
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="TS_FIELD_NUMBER">Version</label>
+                                <input type="number" class="form-control" id="Vers_FIELD_NUMBER">
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="float:right" onclick="testSetKeyValue()">Salvar</button>
                 </form>
                 <small id="emailHelp" class="form-text text-muted">
-                    Remove da hash table</small>
+                    Atualiza hash table se a encontrada a versão especificada </small>
             </div>
         </div>
     </section>
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
         integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
     </script>
@@ -86,23 +94,44 @@
         integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous">
     </script>
     <!-- <script src="../static/js/sb-admin-2.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
     <script>
-        function getKeyValue() {
-            let keyValue = parseInt($("#keyValueDel").val());
-            if (keyValue) {
+        function testSetKeyValue() {
+            var data = {}
+            data["K_FIELD_NUMBER"] = $("#K_FIELD_NUMBER").val();
+            data["D_FIELD_NUMBER"] = $("#D_FIELD_NUMBER").val();
+            if (data) {
+                console.log("setKeyValue");
+
                 $.ajax({
-                    type: 'DELETE',
-                    contentType: "application/json",
-                    url: "/client/delete?k=" + keyValue,
-                    dataType: 'json',
-                    success: function (result) {
-                        console.log(result);
+                    type: 'PUT',
+                    contentType: 'application/json',
+                    url: '/client/TestSet?k=' + $("#K_FIELD_NUMBER").val() + "&vers=" + $("#Vers_FIELD_NUMBER").val(),
+                    cache: false,
+                    timeout: 600000,
+                    success: function () {
+
+                        Swal.fire(
+                            'Sucesso!',
+                            'Foi atualizado o mapa!',
+                            'success'
+                        );
+
+                        $("#K_FIELD_NUMBER").val('');
+                        $("#Vers_FIELD_NUMBER").val('');
+
                     },
                     error: function (e) {
-                        console.log(e);
+                        Swal.fire(
+                            'Erro!',
+                            'Ocorreu um erro ao inserir nova chave!',
+                            'error'
+                        );
+                        console.log("Error ajax setKeyValue()")
+
                     }
-                })
+                });
             }
         }
     </script>

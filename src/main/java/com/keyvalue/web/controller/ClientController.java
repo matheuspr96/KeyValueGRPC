@@ -53,6 +53,11 @@ public class ClientController {
         return "keyValueDelVer";
     }
 
+    @RequestMapping(value = "/keyValueTestSet", method = RequestMethod.GET)
+    public String GetKeyValueTestSet() {
+        return "keyValueTestSet";
+    }
+
     // #endregion
 
     // #region OPERAÇÕES
@@ -91,6 +96,14 @@ public class ClientController {
         //  clientService.delVers(setRequest.K_FIELD_NUMBER, setRequest.TS_FIELD_NUMBER,
         System.out.println("DELETE VER METHOD : " + k + " - " + vers);
         return "keyValueDelVer";
+    }
+
+    @RequestMapping(value = "/client/TestSet", method = RequestMethod.PUT)
+    public String TestSet(@RequestParam("k") int k, @RequestParam("vers") String d) {
+
+        //   clientService.testAndSet(k);
+        System.out.println("TestSet METHOD : " + k + " - " + d);
+        return "redirect:/client/" + k;
     }
 
     // #endregion
