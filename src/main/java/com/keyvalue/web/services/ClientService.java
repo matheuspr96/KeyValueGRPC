@@ -1,164 +1,142 @@
 package com.keyvalue.web.services;
 
+import com.google.protobuf.ByteString;
+import com.keyvalue.web.model.*;
+import com.keyvalue.web.repository.*;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.keyvalue.web.repository.*;
-
-
 public class ClientService {
-    private static final Logger logger = Logger.getLogger(ClientService.class.getName());
+  private static final Logger logger = Logger.getLogger(ClientService.class.getName());
 
-  private final GreeterGrpc.GreeterBlockingStub blockingStub;
+  private final CrudKeyValueGrpc.CrudKeyValueBlockingStub blockingStub;
 
-  /** construtor que realiza a conexao com o server pelo canal channel **/
   public ClientService(Channel channel) {
-    blockingStub = GreeterGrpc.newBlockingStub(channel);
+    blockingStub = CrudKeyValueGrpc.newBlockingStub(channel);
   }
 
-  /** funções q conversa com o server */
-  public void greet(String name) {
-    logger.info("Will try to greet " + name + " ...");
-    HelloRequest request = HelloRequest.newBuilder().setName(name).build();
-    HelloReply response;
-    try {
-      response = blockingStub.sayHello(request);
-    } catch (StatusRuntimeException e) {
-      logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-      return;
-    }
-    logger.info("Greeting: " + response.getMessage());
-  }
+  public void set(byte[] key, long ts, byte[] data) {
+    Comunicacao.SetRequest request;
+    Comunicacao.BigInteger keyBigInteger;
 
-  public void set(int k, int ts, int d) {
-    SetRequest request;
-    request = SetRequest.newBuilder().setK(k).build();
-    request = SetRequest.newBuilder().setTs(ts).build();
-    request = SetRequest.newBuilder().setD(d).build();
-    Reply response;
+    keyBigInteger = Comunicacao.BigInteger.newBuilder().setValue(ByteString.copyFrom(key)).build();
+
+    request = Comunicacao.SetRequest.newBuilder().setKey(keyBigInteger).setTimestamp(ts)
+        .setData(ByteString.copyFrom(data)).build();
+
+    Comunicacao.Reply response;
     try {
       response = blockingStub.set(request);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
       return;
     }
-    logger.info("Greeting: " + response.getError());
+    logger.info("set: " + response);
   }
 
-  public void get(int k) {
-    GetRequest request;
-    request = GetRequest.newBuilder().setK(k).build();
-    Reply response;
+  public void get(byte[] key) {
+    Comunicacao.GetRequest request;
+    Comunicacao.BigInteger keyBigInteger;
+
+    keyBigInteger = Comunicacao.BigInteger.newBuilder().setValue(ByteString.copyFrom(key)).build();
+
+    request = Comunicacao.GetRequest.newBuilder().setKey(keyBigInteger).build();
+
+    Comunicacao.Reply response;
     try {
       response = blockingStub.get(request);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
       return;
     }
-    logger.info("Greeting: " + response.getError());
+    logger.info("get: " + response);
   }
 
-  public void del(int k) {
-    DelRequest request;
-    request = DelRequest.newBuilder().setK(k).build();
-    Reply response;
+  public void del(byte[] key) {
+    Comunicacao.DelRequest request;
+    Comunicacao.BigInteger keyBigInteger;
+
+    keyBigInteger = Comunicacao.BigInteger.newBuilder().setValue(ByteString.copyFrom(key)).build();
+
+    request = Comunicacao.DelRequest.newBuilder().setKey(keyBigInteger).build();
+
+    Comunicacao.Reply response;
     try {
       response = blockingStub.del(request);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
       return;
     }
-    logger.info("Greeting: " + response.getError());
+    logger.info("del: " + response);
   }
 
-  public void delVers(int k, int vers) {
-    DelRequestVers request;
-    request = DelRequestVers.newBuilder().setK(k).build();
-    request = DelRequestVers.newBuilder().setVers(vers).build();
-    Reply response;
+  public void delVers(byte[] key, long version) {
+    Comunicacao.DelRequestVers request;
+    Comunicacao.BigInteger keyBigInteger;
+
+    keyBigInteger = Comunicacao.BigInteger.newBuilder().setValue(ByteString.copyFrom(key)).build();
+
+    request = Comunicacao.DelRequestVers.newBuilder().setKey(keyBigInteger).setVersion(version).build();
+
+    Comunicacao.Reply response;
     try {
       response = blockingStub.delVers(request);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
       return;
     }
-    logger.info("Greeting: " + response.getError());
+    logger.info("delVers: " + response);
   }
 
-  public void testAndSet(int k, int vers2, int ts, int d, int vers) {
-    VTripla request_vtripla;
-    request_vtripla = VTripla.newBuilder().setVers(vers2).build();
-    request_vtripla = VTripla.newBuilder().setTs(ts).build();
-    request_vtripla = VTripla.newBuilder().setD(d).build();
+  public void testAndSet(byte[] key, long version, long ts, byte[] data, long vers) {
+    Comunicacao.VTripla vTripla;
+    Comunicacao.TestAndSetRequest request;
+    Comunicacao.BigInteger keyBigInteger;
 
-    TestAndSetRequest request;
-    request = TestAndSetRequest.newBuilder().setK(k).build();
-    request = TestAndSetRequest.newBuilder().setVers(vers).build();
-    request = TestAndSetRequest.newBuilder().setV(request_vtripla).build();
-    
-    Reply response;
+    keyBigInteger = Comunicacao.BigInteger.newBuilder().setValue(ByteString.copyFrom(key)).build();
+
+    vTripla = Comunicacao.VTripla.newBuilder().setVersion(version).setTimestamp(ts).setData(ByteString.copyFrom(data))
+        .build();
+
+    request = Comunicacao.TestAndSetRequest.newBuilder().setKey(keyBigInteger).setValue(vTripla).setVersion(vers)
+        .build();
+
+    Comunicacao.Reply response;
     try {
       response = blockingStub.testAndSet(request);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
       return;
     }
-    logger.info("Greeting: " + response.getError());
+    logger.info("testAndSet: " + response);
   }
 
-  /** realiza a conexao com o server e chama as funções **/
-  public static void main(String[] args) throws Exception {
-    String user = "world";
-    String user2 = "babana";
-    String target = "localhost:50051"; // Access a service running on the local machine on port 50051
+  // public static void main(String[] args) throws Exception {
+  // String target = "localhost:8980";
 
-    // Create a communication channel to the server, known as a Channel.
-    ManagedChannel channel = ManagedChannelBuilder.forTarget(target)
-        .usePlaintext()
-        .build();
+  // ManagedChannel channel = ManagedChannelBuilder.forTarget(target)
+  // .usePlaintext()
+  // .build();
 
-    // realiza a comunicação com o server
-    try {
-      int sair = 1;
-      ClientService client2 = new ClientService(channel);
-      System.out.println("\n\nBem Vindo ao nosso Banco de Dados NoSQL Rudimentar!!!\n\n");
-      while (sair == 1) {
-        System.out.println("Escolha uma das funções abaixo:");
-        System.out.println("1 - Set");
-        System.out.println("2 - Get");
-        System.out.println("3 - Delete");
-        System.out.println("4 - Delete Version");
-        System.out.println("5 - Test And Set");
-        System.out.println("6 - Sair");
-	int choice = 1;
+  // try {
+  // ClientService client2 = new ClientService(channel);
+  // byte[] key = { 01, 66, 78, 75, 65, 74 };
+  // byte[] data = { 01, 65, 78, 75, 75, 75 };  
 
-        if (choice == 1) {
-          // pega os valores do usuario
-          client2.set(4,5,8);        
-        } else if (choice == 2) {
-          // pega os valores do usuario
-          client2.get(8);
-        } else if (choice == 3) {
-          // pega os valores do usuario
-          client2.del(5);
-        } else if (choice == 4) {
-          // pega os valores do usuario
-          client2.delVers(4,8);
-        } else if (choice == 5) {
-          // pega os valores do usuario
-          client2.testAndSet(4,5,8,5,5);
-        } else if (choice == 6) {
-          sair = 0;
-        }
-      }
-    } finally {
-      System.out.println("\n\nObrigado por usar nossos serviços, volte sempre!!!");
-      channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
-    }
-  }
+  // client2.set(key, 55, data);
+  // // client2.get(key);
+  // // client2.del(key);
+  // // client2.delVers(key,1);
+  // // client2.testAndSet(key,3,54,data,1);
+
+  // } finally {
+  // channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+  // }
+  // }
 }

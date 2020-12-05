@@ -1,9 +1,5 @@
 package com.keyvalue.web.controller;
 
-import com.keyvalue.web.repository.DelRequest;
-import com.keyvalue.web.repository.DelRequestVers;
-import com.keyvalue.web.repository.Reply;
-import com.keyvalue.web.repository.SetRequest;
 import com.keyvalue.web.services.ClientService;
 
 import org.springframework.stereotype.Controller;
@@ -16,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+
 // import jdk.javadoc.internal.doclets.toolkit.resources.doclets;
 
 // import jdk.nashorn.internal.runtime.Undefined;
@@ -24,6 +23,15 @@ import org.springframework.web.servlet.ModelAndView;
 public class ClientController {
 
     ClientService clientService;
+    public ClientController(){
+        String target = "localhost:8980";
+
+        ManagedChannel channel = ManagedChannelBuilder.forTarget(target)
+            .usePlaintext()
+            .build();
+
+        ClientService clientService = new ClientService(channel);
+    }
 
     // #region EVENTOS
 
@@ -76,9 +84,9 @@ public class ClientController {
     }
 
     @RequestMapping(value = "/client", method = RequestMethod.POST)
-    public String Set(@RequestParam("k") int k, @RequestParam("d") String d) {
+    public String Set(@RequestParam("k") String k, @RequestParam("d") String d) {
 
-        // clientService.set(k, 0, d);
+        clientService.set(k.getBytes(), 0, d.getBytes());
         System.out.println("INSERT METHOD : " + k + " - " + d);
         return "redirect:/client/" + k;
     }
