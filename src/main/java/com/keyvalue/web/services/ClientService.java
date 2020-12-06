@@ -21,7 +21,7 @@ public class ClientService {
     blockingStub = CrudKeyValueGrpc.newBlockingStub(channel);
   }
 
-  public void set(byte[] key, long ts, byte[] data) {
+  public Comunicacao.Reply set(byte[] key, long ts, byte[] data) {
     Comunicacao.SetRequest request;
     Comunicacao.BigInteger keyBigInteger;
 
@@ -30,14 +30,14 @@ public class ClientService {
     request = Comunicacao.SetRequest.newBuilder().setKey(keyBigInteger).setTimestamp(ts)
         .setData(ByteString.copyFrom(data)).build();
 
-    Comunicacao.Reply response;
+    Comunicacao.Reply response = null;
     try {
       response = blockingStub.set(request);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-      return;
     }
     logger.info("set: " + response);
+    return response;
   }
 
   public Comunicacao.Reply get(byte[] key) {
@@ -57,25 +57,25 @@ public class ClientService {
     return response;
   }
 
-  public void del(byte[] key) {
+  public Comunicacao.Reply del(byte[] key) {
     Comunicacao.DelRequest request;
     Comunicacao.BigInteger keyBigInteger;
+    Comunicacao.Reply response = null;
 
     keyBigInteger = Comunicacao.BigInteger.newBuilder().setValue(ByteString.copyFrom(key)).build();
 
     request = Comunicacao.DelRequest.newBuilder().setKey(keyBigInteger).build();
 
-    Comunicacao.Reply response;
     try {
       response = blockingStub.del(request);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-      return;
     }
     logger.info("del: " + response);
+    return response;
   }
 
-  public void delVers(byte[] key, long version) {
+  public Comunicacao.Reply delVers(byte[] key, long version) {
     Comunicacao.DelRequestVers request;
     Comunicacao.BigInteger keyBigInteger;
 
@@ -83,17 +83,17 @@ public class ClientService {
 
     request = Comunicacao.DelRequestVers.newBuilder().setKey(keyBigInteger).setVersion(version).build();
 
-    Comunicacao.Reply response;
+    Comunicacao.Reply response = null;
     try {
       response = blockingStub.delVers(request);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-      return;
     }
     logger.info("delVers: " + response);
+    return response;
   }
 
-  public void testAndSet(byte[] key, long version, long ts, byte[] data, long vers) {
+  public Comunicacao.Reply testAndSet(byte[] key, long version, long ts, byte[] data, long vers) {
     Comunicacao.VTripla vTripla;
     Comunicacao.TestAndSetRequest request;
     Comunicacao.BigInteger keyBigInteger;
@@ -106,14 +106,14 @@ public class ClientService {
     request = Comunicacao.TestAndSetRequest.newBuilder().setKey(keyBigInteger).setValue(vTripla).setVersion(vers)
         .build();
 
-    Comunicacao.Reply response;
+    Comunicacao.Reply response = null;
     try {
       response = blockingStub.testAndSet(request);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-      return;
     }
     logger.info("testAndSet: " + response);
+    return response;
   }
 
   // public static void main(String[] args) throws Exception {

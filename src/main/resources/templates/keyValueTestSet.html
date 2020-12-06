@@ -63,23 +63,37 @@
                     </div>
                 </div>
 
-                <form>
-                    <div class="form-group">
-                        <label for="K_FIELD_NUMBER">Key</label>
-                        <input type="text" class="form-control" id="K_FIELD_NUMBER">
-                    </div>
-                    <!-- Será gerado aleatoriamente -->
-
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <label for="TS_FIELD_NUMBER">Version</label>
-                                <input type="number" class="form-control" id="Vers_FIELD_NUMBER">
-                            </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="K_FIELD_NUMBER">Key</label>
+                            <input type="text" class="form-control" id="K_FIELD_NUMBER">
                         </div>
                     </div>
-                    <button class="btn btn-primary" style="float:right" onclick="testSetKeyValue()">Salvar</button>
-                </form>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="VS_FIELD_NUMBER">Version</label>
+                            <input type="text" class="form-control" id="VS_FIELD_NUMBER">
+                        </div>
+                    </div>
+                </div>
+                <!-- Será gerado aleatoriamente -->
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="TS_FIELD_NUMBER">Timestamp</label>
+                            <input type="number" class="form-control" id="TS_FIELD_NUMBER" th:value="${TS}" disabled>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="D_FIELD_NUMBER">Dados</label>
+                            <input type="text" class="form-control" id="D_FIELD_NUMBER">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="float:right" onclick="testSetKeyValue()">Salvar</button>
                 <small id="emailHelp" class="form-text text-muted">
                     Atualiza hash table se a encontrada a versão especificada </small>
             </div>
@@ -107,29 +121,38 @@
                 $.ajax({
                     type: 'PUT',
                     contentType: 'application/json',
-                    url: '/client/TestSet?k=' + $("#K_FIELD_NUMBER").val() + "&vers=" + $("#Vers_FIELD_NUMBER").val(),
+                    url: '/client/TestSet?k=' + $("#K_FIELD_NUMBER").val() + "&vers=" + $("#VS_FIELD_NUMBER")
+                        .val() +
+                        "&ts=" + $("#TS_FIELD_NUMBER").val() + "&data=" + $("#D_FIELD_NUMBER").val(),
                     cache: false,
                     timeout: 600000,
-                    success: function () {
-
-                        Swal.fire(
-                            'Sucesso!',
-                            'Foi atualizado o mapa!',
-                            'success'
-                        );
-
-                        $("#K_FIELD_NUMBER").val('');
-                        $("#Vers_FIELD_NUMBER").val('');
+                    success: function (response) {
+                        getCodeReturn = response.split("|");
+                        console.log(getCodeReturn);
+                        if (getCodeReturn[0] == "SUCCESS") {
+                            Swal.fire(
+                                'Sucesso!',
+                                getCodeReturn[1],
+                                'success'
+                            )
+                            .then((result) => {
+                                window.location.href = "/keyValueTestSet"
+                            });
+                        }
+                        else {
+                            Swal.fire(
+                                'erro!',
+                                getCodeReturn[1],
+                                'error'
+                            )
+                            .then((result) => {
+                                window.location.href = "/keyValueTestSet"
+                            });
+                        } 
 
                     },
                     error: function (e) {
-                        Swal.fire(
-                            'Erro!',
-                            'Ocorreu um erro ao inserir nova chave!',
-                            'error'
-                        );
                         console.log("Error ajax setKeyValue()")
-
                     }
                 });
             }

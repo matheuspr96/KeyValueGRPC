@@ -48,11 +48,11 @@
     </main>
 
     <article>
-   
+
         <div class="container p-4" style="width: 60%;">
-            <div id="ErrorAlert" class="alert alert-danger d-none" role="alert">
-                Erro. Não foi encontrado dados para a chave informada
-              </div>
+            <input id="ErrorAlert" type="hidden" th:value="${ErrorNumber}">
+            <input id="SuccessAlert" type="hidden" th:value="${SuccessNumber}">
+
             <div class="card border-left-green" style="max-height: calc(100vh - 130px)">
                 <div class="row my-3 mx-1">
                     <div class="col-sm-6">
@@ -104,17 +104,86 @@
 
     <script>
         $(document).ready(function () {
-            let value = $("#D_FIELD_NUMBER").val();
-            console.log(value);
-            if (value == null || value == "") {
-                Swal.fire(
-                    'Erro!',
-                    'Ocorreu um erro ao inserir nova chave!',
-                    'error'
-                ).then((result) => {
-                    window.location.href = "/"
-                });
+            let valueError = parseInt($("#ErrorAlert").val());
+            let valueSuccess = parseInt($("#SuccessAlert").val());
+            console.log(valueSuccess);
+
+            if (valueError > -1) {
+                switch (valueError) {
+                    case 0:
+                        //Get error
+                        Swal.fire(
+                            'Erro!',
+                            'Chave não encontrada!',
+                            'error'
+                        ).then((result) => {
+                            window.location.href = "/"
+                        });
+                        break;
+                    case 1:
+                        //Insert error
+                        Swal.fire(
+                            'Erro!',
+                            'Chave Já existe dados para a chave informada!',
+                            'error'
+                        ).then((result) => {
+                            window.location.href = "/client/insert"
+                        });
+                        break;
+                    case 2:
+                        //Del error
+                        break;
+                    case 3:
+                        //Del vers error
+                        break;
+
+                    case 4:
+                        //Test and SET error
+                        break;
+
+                    default:
+                        console.log("Erro não encontrado");
+                }
             }
+
+            if (valueSuccess > -1) {
+                switch (valueError) {
+                    case 0:
+                        //Get error
+                        Swal.fire(
+                            'Sucesso!',
+                            'Chave Inserida com sucesso',
+                            'success'
+                        ).then((result) => {
+                            window.location.href = "/"
+                        });
+                        break;
+                    case 1:
+                        //Insert error
+                        Swal.fire(
+                            'Erro!',
+                            'Chave Já existe dados para a chave informada!',
+                            'error'
+                        ).then((result) => {
+                            window.location.href = "/"
+                        });
+                        break;
+                    case 2:
+                        //Del error
+                        break;
+                    case 3:
+                        //Del vers error
+                        break;
+
+                    case 4:
+                        //Test and SET error
+                        break;
+
+                    default:
+                        console.log("Erro não encontrado");
+                }
+            };
+
         });
     </script>
 </body>

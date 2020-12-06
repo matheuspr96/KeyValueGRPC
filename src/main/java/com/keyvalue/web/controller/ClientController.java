@@ -5,6 +5,7 @@ import com.keyvalue.web.model.*;
 import com.keyvalue.web.model.Comunicacao.VTripla;
 import com.keyvalue.web.services.ClientService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,12 +17,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Objects;
+
+import javax.print.DocFlavor.STRING;
 
 // import jdk.javadoc.internal.doclets.toolkit.resources.doclets;
 
@@ -72,8 +77,11 @@ public class ClientController {
     }
 
     @RequestMapping(value = "/keyValueTestSet", method = RequestMethod.GET)
-    public String GetKeyValueTestSet() {
-        return "keyValueTestSet";
+    public ModelAndView GetKeyValueTestSet() {
+        long timestamp = System.currentTimeMillis() / 1000;
+        ModelAndView mv = new ModelAndView("keyValueTestSet");
+        mv.addObject("TS", timestamp);
+        return mv;
     }
 
     // #endregion
@@ -82,68 +90,176 @@ public class ClientController {
 
     @RequestMapping(value = "/client/{k}", method = RequestMethod.GET)
     public ModelAndView Get(@PathVariable("k") String k) {
-        //Declarations
+        // Declarations
         long version = 0;
         long timestamp = 0;
         String dados = null;
+        int error = -1;
 
-        //Calls
+        // Calls
         System.out.println("GET METHOD : " + k);
         Comunicacao.Reply replyServer = clientService.get(k.getBytes());
         String replyError = replyServer.getError();
 
-
         // Return
-        if (replyError.trim() == "SUCCESS") {
+        if (Objects.equals(replyError, "SUCCESS")) {
             VTripla reply = replyServer.getValue();
             version = reply.getVersion();
             timestamp = reply.getTimestamp();
-            dados =  new String(reply.getData().toStringUtf8());     
-        } 
-        
+            dados = new String(reply.getData().toStringUtf8());
+        } else {
+            // GetError
+            error = 0;
+        }
+
         // ViewModel
         ModelAndView mv = new ModelAndView("keyValueDetails");
+        mv.addObject("ErrorNumber", error);
         mv.addObject("K_FIELD_NUMBER", version);
         mv.addObject("TS_FIELD_NUMBER", timestamp);
-        mv.addObject("D_FIELD_NUMBER",dados);
+        mv.addObject("D_FIELD_NUMBER", dados);
         return mv;
     }
 
     @RequestMapping(value = "/client/insert", method = RequestMethod.POST)
-    public @ResponseBody ResponseEntity<?> Set(@RequestParam("k") String k, @RequestParam("ts") long ts,
-            @RequestParam("d") String d) {
+    @ResponseBody
+    public String Set(@RequestParam("k") String k, @RequestParam("ts") long ts, @RequestParam("d") String d) {
 
         System.out.println("INSERT METHOD : " + k + " - " + ts + " - " + d);
-        try {
-            clientService.set(k.getBytes(), ts, d.getBytes());
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().body("Erro");
-        }
+        // Declarations
+        long version = 0;
+        long timestamp = 0;
+        String dados = null;
+        int erro = -1;
+        int success = -1;
 
-        return ResponseEntity.ok().body("Sucess");
+        // Calls
+        Comunicacao.Reply replyServer = clientService.set(k.getBytes(), ts, d.getBytes());
+        String replyError = replyServer.getError();
+        // Return
+        if (Objects.equals(replyError, "SUCCESS")) {
+            success = 0;
+            return "SUCCESS";
+        } else if (Objects.equals(replyError, "ERROR")) {
+            VTripla reply = replyServer.getValue();
+            version = reply.getVersion();
+            timestamp = reply.getTimestamp();
+            dados = new String(reply.getData().toStringUtf8());
+            String message = "Chave já inserida!.<span style='text-align: left'> <br> Versão: " + version
+                    + "<br>Timestamp: " + timestamp + "<br>Dados: " + dados + "</span>";
+            return message;
+        } else {
+            return "Erro desconhecido";
+        }
     }
 
     @RequestMapping(value = "/client/delete", method = RequestMethod.DELETE)
-    public String Del(@RequestParam("k") int k) {
+    @ResponseBody
+    public String Del(@RequestParam("k") String k) {
         System.out.println("DELETE METHOD : " + k);
-        // clientService.del(k);
-        return "keyValueDel";
+
+        // Declarations
+        long version = 0;
+        long timestamp = 0;
+        String dados = null;
+
+        // Calls
+        Comunicacao.Reply replyServer = clientService.del(k.getBytes());
+        String replyError = replyServer.getError();
+
+        // Return
+        if (Objects.equals(replyError, "SUCCESS")) {
+            VTripla reply = replyServer.getValue();
+            version = reply.getVersion();
+            timestamp = reply.getTimestamp();
+            dados = new String(reply.getData().toStringUtf8());
+            return "Chave removida com sucesso!.<span style='text-align: left'> <br> Versão: " + version
+                    + "<br>Timestamp: " + timestamp + "<br>Dados: " + dados + "</span>";
+        } else {
+            return "ERROR";
+        }
     }
 
     @RequestMapping(value = "/client/delete/version", method = RequestMethod.DELETE)
-    public String DelVer(@RequestParam("k") int k, @RequestParam("vers") int vers) {
+    @ResponseBody
+    public String DelVer(@RequestParam("k") String k, @RequestParam("vers") long vers) {
 
-        // clientService.delVers(setRequest.K_FIELD_NUMBER, setRequest.TS_FIELD_NUMBER,
         System.out.println("DELETE VER METHOD : " + k + " - " + vers);
-        return "keyValueDelVer";
+
+        // Declarations
+        long version = 0;
+        long timestamp = 0;
+        String dados = null;
+
+        // Calls
+        Comunicacao.Reply replyServer = clientService.delVers(k.getBytes(), vers);
+        String replyError = replyServer.getError();
+
+        // Return
+        String message = "";
+        if (Objects.equals(replyError, "SUCCESS")) {
+            VTripla reply = replyServer.getValue();
+            version = reply.getVersion();
+            timestamp = reply.getTimestamp();
+            dados = new String(reply.getData().toStringUtf8());
+            message = "SUCCESS|Chave vers removida com sucesso!.<span style='text-align: left'> <br> Versão: " + version
+                    + "<br>Timestamp: " + timestamp + "<br>Dados: " + dados + "</span>";
+        } else if (Objects.equals(replyError, "ERROR_NE")) {
+            message = "ERROR|Não foi encontrado entrada com a chave e versão informada";
+        } else if (Objects.equals(replyError, "ERROR_WV")) {
+            message = "ERROR| Não foi encontrado entrada com a chave e versao informada, porém existe uma chave com outra versão"
+                    + "<span style='text-align: left'> <br> Versão: " + version + "<br>Timestamp: " + timestamp
+                    + "<br>Dados: " + dados + "</span>";
+        }
+        return message;
     }
 
     @RequestMapping(value = "/client/TestSet", method = RequestMethod.PUT)
-    public String TestSet(@RequestParam("k") int k, @RequestParam("vers") String d) {
+    @ResponseBody
+    public String TestSet(@RequestParam("k") String k, @RequestParam("vers") long v, @RequestParam("ts") long ts,
+            @RequestParam("data") String data) {
 
         // clientService.testAndSet(k);
-        System.out.println("TestSet METHOD : " + k + " - " + d);
-        return "redirect:/client/" + k;
+        // System.out.println("TestSet METHOD : " + k + " - " + d);
+
+        // Declarations
+        long version = 0;
+        long timestamp = 0;
+        String dados = null;
+        long timestampInput = System.currentTimeMillis() / 1000;
+        // Calls
+        Comunicacao.Reply replyServerGet = clientService.get(k.getBytes());
+        VTripla replyGet = replyServerGet.getValue();
+        version = replyGet.getVersion();
+        timestamp = replyGet.getTimestamp();
+        dados = new String(replyGet.getData().toStringUtf8());
+
+        Comunicacao.Reply replyServer = clientService.testAndSet(k.getBytes(), version, ts, data.getBytes(), v);
+
+        String replyError = replyServer.getError();
+        String message = "";
+        // Return
+
+        if (Objects.equals(replyError, "SUCCESS")) {
+            VTripla reply = replyServer.getValue();
+            version = reply.getVersion();
+            timestamp = reply.getTimestamp();
+            dados = new String(reply.getData().toStringUtf8());
+            message = "SUCCESS|Chave Atualizada com sucesso!<br> Dados da chave anterior.<span style='text-align: left'> <br> Versão: " + version
+            + "<br>Timestamp: " + timestamp + "<br>Dados: " + dados + "</span>";
+        }
+        else if(Objects.equals(replyError, "ERROR_NE")){
+            message = "ERROR|Não foi encontrado entrada com a chave informada";
+        }
+        else if(Objects.equals(replyError, "ERROR_WV")){
+            VTripla reply = replyServer.getValue();
+            version = reply.getVersion();
+            timestamp = reply.getTimestamp();
+            dados = new String(reply.getData().toStringUtf8());
+            message = "ERROR|Chave encontrada, porém, não foi encontrada a versão informada!.<span style='text-align: left'> <br> Versão: " + version
+            + "<br>Timestamp: " + timestamp + "<br>Dados: " + dados + "</span>";
+        }
+        return message;
     }
 
     // #endregion
