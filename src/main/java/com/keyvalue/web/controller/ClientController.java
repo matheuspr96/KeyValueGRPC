@@ -1,7 +1,11 @@
 package com.keyvalue.web.controller;
 
+import com.google.gson.Gson;
+import com.keyvalue.web.model.*;
+import com.keyvalue.web.model.Comunicacao.VTripla;
 import com.keyvalue.web.services.ClientService;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -10,10 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+
+import java.sql.Timestamp;
+import java.util.Date;
 
 // import jdk.javadoc.internal.doclets.toolkit.resources.doclets;
 
@@ -23,14 +31,13 @@ import io.grpc.ManagedChannelBuilder;
 public class ClientController {
 
     ClientService clientService;
-    public ClientController(){
+
+    public ClientController() {
         String target = "localhost:8980";
 
-        ManagedChannel channel = ManagedChannelBuilder.forTarget(target)
-            .usePlaintext()
-            .build();
+        ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
 
-        ClientService clientService = new ClientService(channel);
+        clientService = new ClientService(channel);
     }
 
     // #region EVENTOS
@@ -47,8 +54,11 @@ public class ClientController {
     }
 
     @RequestMapping(value = "/keyValueNew", method = RequestMethod.GET)
-    public String GetKeyValueForm() {
-        return "keyValueForm";
+    public ModelAndView GetKeyValueForm() {
+        long timestamp = System.currentTimeMillis() / 1000;
+        ModelAndView mv = new ModelAndView("keyValueForm");
+        mv.addObject("TS", timestamp);
+        return mv;
     }
 
     @RequestMapping(value = "/keyValueDelete", method = RequestMethod.GET)
@@ -71,24 +81,46 @@ public class ClientController {
     // #region OPERAÇÕES
 
     @RequestMapping(value = "/client/{k}", method = RequestMethod.GET)
-    public ModelAndView Get(@PathVariable("k") int k) {
+    public ModelAndView Get(@PathVariable("k") String k) {
+        //Declarations
+        long version = 0;
+        long timestamp = 0;
+        String dados = null;
 
-        // clientService.get(k);
+        //Calls
         System.out.println("GET METHOD : " + k);
+        Comunicacao.Reply replyServer = clientService.get(k.getBytes());
+        String replyError = replyServer.getError();
 
+
+        // Return
+        if (replyError.trim() == "SUCCESS") {
+            VTripla reply = replyServer.getValue();
+            version = reply.getVersion();
+            timestamp = reply.getTimestamp();
+            dados =  new String(reply.getData().toStringUtf8());     
+        } 
+        
+        // ViewModel
         ModelAndView mv = new ModelAndView("keyValueDetails");
-        mv.addObject("K_FIELD_NUMBER", 0);
-        mv.addObject("TS_FIELD_NUMBER", 0);
-        mv.addObject("D_FIELD_NUMBER", 0);
+        mv.addObject("K_FIELD_NUMBER", version);
+        mv.addObject("TS_FIELD_NUMBER", timestamp);
+        mv.addObject("D_FIELD_NUMBER",dados);
         return mv;
     }
 
-    @RequestMapping(value = "/client", method = RequestMethod.POST)
-    public String Set(@RequestParam("k") String k, @RequestParam("d") String d) {
+    @RequestMapping(value = "/client/insert", method = RequestMethod.POST)
+    public @ResponseBody ResponseEntity<?> Set(@RequestParam("k") String k, @RequestParam("ts") long ts,
+            @RequestParam("d") String d) {
 
-        clientService.set(k.getBytes(), 0, d.getBytes());
-        System.out.println("INSERT METHOD : " + k + " - " + d);
-        return "redirect:/client/" + k;
+        System.out.println("INSERT METHOD : " + k + " - " + ts + " - " + d);
+        try {
+            clientService.set(k.getBytes(), ts, d.getBytes());
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body("Erro");
+        }
+
+        return ResponseEntity.ok().body("Sucess");
     }
 
     @RequestMapping(value = "/client/delete", method = RequestMethod.DELETE)
@@ -101,7 +133,7 @@ public class ClientController {
     @RequestMapping(value = "/client/delete/version", method = RequestMethod.DELETE)
     public String DelVer(@RequestParam("k") int k, @RequestParam("vers") int vers) {
 
-        //  clientService.delVers(setRequest.K_FIELD_NUMBER, setRequest.TS_FIELD_NUMBER,
+        // clientService.delVers(setRequest.K_FIELD_NUMBER, setRequest.TS_FIELD_NUMBER,
         System.out.println("DELETE VER METHOD : " + k + " - " + vers);
         return "keyValueDelVer";
     }
@@ -109,7 +141,7 @@ public class ClientController {
     @RequestMapping(value = "/client/TestSet", method = RequestMethod.PUT)
     public String TestSet(@RequestParam("k") int k, @RequestParam("vers") String d) {
 
-        //   clientService.testAndSet(k);
+        // clientService.testAndSet(k);
         System.out.println("TestSet METHOD : " + k + " - " + d);
         return "redirect:/client/" + k;
     }

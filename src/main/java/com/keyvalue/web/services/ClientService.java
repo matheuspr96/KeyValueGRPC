@@ -40,7 +40,7 @@ public class ClientService {
     logger.info("set: " + response);
   }
 
-  public void get(byte[] key) {
+  public Comunicacao.Reply get(byte[] key) {
     Comunicacao.GetRequest request;
     Comunicacao.BigInteger keyBigInteger;
 
@@ -48,14 +48,13 @@ public class ClientService {
 
     request = Comunicacao.GetRequest.newBuilder().setKey(keyBigInteger).build();
 
-    Comunicacao.Reply response;
+    Comunicacao.Reply response = null;
     try {
       response = blockingStub.get(request);
     } catch (StatusRuntimeException e) {
       logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-      return;
     }
-    logger.info("get: " + response);
+    return response;
   }
 
   public void del(byte[] key) {
@@ -127,7 +126,7 @@ public class ClientService {
   // try {
   // ClientService client2 = new ClientService(channel);
   // byte[] key = { 01, 66, 78, 75, 65, 74 };
-  // byte[] data = { 01, 65, 78, 75, 75, 75 };  
+  // byte[] data = { 01, 65, 78, 75, 75, 75 };
 
   // client2.set(key, 55, data);
   // // client2.get(key);

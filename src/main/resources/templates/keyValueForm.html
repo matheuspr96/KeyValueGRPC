@@ -66,7 +66,7 @@
                 <form>
                     <div class="form-group">
                         <label for="K_FIELD_NUMBER">Key</label>
-                        <input type="text" class="form-control" id="K_FIELD_NUMBER" th:value="${message}">
+                        <input type="text" class="form-control" id="K_FIELD_NUMBER">
                     </div>
                     <!-- Será gerado aleatoriamente -->
 
@@ -74,14 +74,14 @@
                         <div class="col-sm-4">
                             <div class="form-group">
                                 <label for="TS_FIELD_NUMBER">Timestamp</label>
-                                <input type="number" class="form-control" id="TS_FIELD_NUMBER" th:value="${message}"
+                                <input type="number" class="form-control" id="TS_FIELD_NUMBER" th:value="${TS}"
                                     disabled>
                             </div>
                         </div>
                         <div class="col-sm-8">
                             <div class="form-group">
                                 <label for="D_FIELD_NUMBER">Dados</label>
-                                <input type="text" class="form-control" id="D_FIELD_NUMBER" th:value="${message}">
+                                <input type="text" class="form-control" id="D_FIELD_NUMBER">
                             </div>
                         </div>
                     </div>
@@ -115,21 +115,21 @@
                 $.ajax({
                     type: 'POST',
                     contentType: 'application/json',
-                    url: '/client?k='+ $("#K_FIELD_NUMBER").val() + "&d="+ $("#D_FIELD_NUMBER").val(),
+                    url: '/client/insert?k='+ $("#K_FIELD_NUMBER").val() +"&ts=" + $("#TS_FIELD_NUMBER").val() + "&d="+ $("#D_FIELD_NUMBER").val(),
                     cache: false,
-                    timeout: 600000,
-                    success: function () {
-
+                    timeout: 10000,
+                    success: function (data) {
+                        console.log(data);
                         Swal.fire(
                             'Sucesso!',
                             'Foi inserida uma nova chave!',
                             'success'
                         );
 
-                        $("#K_FIELD_NUMBER").val('');
-                        $("#TS_FIELD_NUMBER").val('');
-                        $("#D_FIELD_NUMBER").val('');
-
+                        // $("#K_FIELD_NUMBER").val('');
+                        // $("#TS_FIELD_NUMBER").val('');
+                        // $("#D_FIELD_NUMBER").val('');
+                        console.log("sucess ajax setKeyValue()")
                     },
                     error: function (e) {
                         Swal.fire(
@@ -138,7 +138,6 @@
                             'error'
                         );
                         console.log("Error ajax setKeyValue()")
-
                     }
                 });
             }

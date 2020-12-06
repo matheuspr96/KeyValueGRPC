@@ -899,17 +899,17 @@ public final class Comunicacao {
         getErrorBytes();
 
     /**
-     * <code>required .VTripla value = 2;</code>
+     * <code>optional .VTripla value = 2;</code>
      * @return Whether the value field is set.
      */
     boolean hasValue();
     /**
-     * <code>required .VTripla value = 2;</code>
+     * <code>optional .VTripla value = 2;</code>
      * @return The value.
      */
     com.keyvalue.web.model.Comunicacao.VTripla getValue();
     /**
-     * <code>required .VTripla value = 2;</code>
+     * <code>optional .VTripla value = 2;</code>
      */
     com.keyvalue.web.model.Comunicacao.VTriplaOrBuilder getValueOrBuilder();
   }
@@ -1063,7 +1063,7 @@ public final class Comunicacao {
     public static final int VALUE_FIELD_NUMBER = 2;
     private com.keyvalue.web.model.Comunicacao.VTripla value_;
     /**
-     * <code>required .VTripla value = 2;</code>
+     * <code>optional .VTripla value = 2;</code>
      * @return Whether the value field is set.
      */
     @java.lang.Override
@@ -1071,7 +1071,7 @@ public final class Comunicacao {
       return ((bitField0_ & 0x00000002) != 0);
     }
     /**
-     * <code>required .VTripla value = 2;</code>
+     * <code>optional .VTripla value = 2;</code>
      * @return The value.
      */
     @java.lang.Override
@@ -1079,7 +1079,7 @@ public final class Comunicacao {
       return value_ == null ? com.keyvalue.web.model.Comunicacao.VTripla.getDefaultInstance() : value_;
     }
     /**
-     * <code>required .VTripla value = 2;</code>
+     * <code>optional .VTripla value = 2;</code>
      */
     @java.lang.Override
     public com.keyvalue.web.model.Comunicacao.VTriplaOrBuilder getValueOrBuilder() {
@@ -1097,13 +1097,11 @@ public final class Comunicacao {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasValue()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!getValue().isInitialized()) {
-        memoizedIsInitialized = 0;
-        return false;
+      if (hasValue()) {
+        if (!getValue().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -1427,11 +1425,10 @@ public final class Comunicacao {
         if (!hasError()) {
           return false;
         }
-        if (!hasValue()) {
-          return false;
-        }
-        if (!getValue().isInitialized()) {
-          return false;
+        if (hasValue()) {
+          if (!getValue().isInitialized()) {
+            return false;
+          }
         }
         return true;
       }
@@ -1544,14 +1541,14 @@ public final class Comunicacao {
       private com.google.protobuf.SingleFieldBuilderV3<
           com.keyvalue.web.model.Comunicacao.VTripla, com.keyvalue.web.model.Comunicacao.VTripla.Builder, com.keyvalue.web.model.Comunicacao.VTriplaOrBuilder> valueBuilder_;
       /**
-       * <code>required .VTripla value = 2;</code>
+       * <code>optional .VTripla value = 2;</code>
        * @return Whether the value field is set.
        */
       public boolean hasValue() {
         return ((bitField0_ & 0x00000002) != 0);
       }
       /**
-       * <code>required .VTripla value = 2;</code>
+       * <code>optional .VTripla value = 2;</code>
        * @return The value.
        */
       public com.keyvalue.web.model.Comunicacao.VTripla getValue() {
@@ -1562,7 +1559,7 @@ public final class Comunicacao {
         }
       }
       /**
-       * <code>required .VTripla value = 2;</code>
+       * <code>optional .VTripla value = 2;</code>
        */
       public Builder setValue(com.keyvalue.web.model.Comunicacao.VTripla value) {
         if (valueBuilder_ == null) {
@@ -1578,7 +1575,7 @@ public final class Comunicacao {
         return this;
       }
       /**
-       * <code>required .VTripla value = 2;</code>
+       * <code>optional .VTripla value = 2;</code>
        */
       public Builder setValue(
           com.keyvalue.web.model.Comunicacao.VTripla.Builder builderForValue) {
@@ -1592,7 +1589,7 @@ public final class Comunicacao {
         return this;
       }
       /**
-       * <code>required .VTripla value = 2;</code>
+       * <code>optional .VTripla value = 2;</code>
        */
       public Builder mergeValue(com.keyvalue.web.model.Comunicacao.VTripla value) {
         if (valueBuilder_ == null) {
@@ -1612,7 +1609,7 @@ public final class Comunicacao {
         return this;
       }
       /**
-       * <code>required .VTripla value = 2;</code>
+       * <code>optional .VTripla value = 2;</code>
        */
       public Builder clearValue() {
         if (valueBuilder_ == null) {
@@ -1625,7 +1622,7 @@ public final class Comunicacao {
         return this;
       }
       /**
-       * <code>required .VTripla value = 2;</code>
+       * <code>optional .VTripla value = 2;</code>
        */
       public com.keyvalue.web.model.Comunicacao.VTripla.Builder getValueBuilder() {
         bitField0_ |= 0x00000002;
@@ -1633,7 +1630,7 @@ public final class Comunicacao {
         return getValueFieldBuilder().getBuilder();
       }
       /**
-       * <code>required .VTripla value = 2;</code>
+       * <code>optional .VTripla value = 2;</code>
        */
       public com.keyvalue.web.model.Comunicacao.VTriplaOrBuilder getValueOrBuilder() {
         if (valueBuilder_ != null) {
@@ -1644,7 +1641,7 @@ public final class Comunicacao {
         }
       }
       /**
-       * <code>required .VTripla value = 2;</code>
+       * <code>optional .VTripla value = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           com.keyvalue.web.model.Comunicacao.VTripla, com.keyvalue.web.model.Comunicacao.VTripla.Builder, com.keyvalue.web.model.Comunicacao.VTriplaOrBuilder> 
@@ -6078,7 +6075,7 @@ public final class Comunicacao {
       "\n\021Comunicacao.proto\"G\n\nSetRequest\022\030\n\003key" +
       "\030\001 \002(\0132\013.BigInteger\022\021\n\ttimestamp\030\002 \002(\003\022\014" +
       "\n\004data\030\003 \002(\014\"/\n\005Reply\022\r\n\005error\030\001 \002(\t\022\027\n\005" +
-      "value\030\002 \002(\0132\010.VTripla\"&\n\nGetRequest\022\030\n\003k" +
+      "value\030\002 \001(\0132\010.VTripla\"&\n\nGetRequest\022\030\n\003k" +
       "ey\030\001 \002(\0132\013.BigInteger\"&\n\nDelRequest\022\030\n\003k" +
       "ey\030\001 \002(\0132\013.BigInteger\";\n\016DelRequestVers\022" +
       "\030\n\003key\030\001 \002(\0132\013.BigInteger\022\017\n\007version\030\002 \002" +

@@ -68,7 +68,7 @@
                 <div class="p-4">
                     <div class="form-group">
                         <label for="exampleInputEmail1">Key</label>
-                        <input type="number" class="form-control" id="keyValue">
+                        <input type="text" class="form-control" id="keyValue">
                         <small id="emailHelp" class="form-text text-muted">Busca um registro na tabela hash </small>
                     </div>
                     <button type="submit" onclick="getKeyValue()" class="btn btn-primary">Buscar</button>
@@ -93,7 +93,7 @@
 </body>
 <script>
     function getKeyValue() {
-        let keyValue = parseInt($("#keyValue").val());
+        let keyValue = $("#keyValue").val();
         if(keyValue){
             window.location.href = "/client/" + keyValue;
         }
