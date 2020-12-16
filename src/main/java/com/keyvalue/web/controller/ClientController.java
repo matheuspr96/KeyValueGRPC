@@ -1,32 +1,22 @@
 package com.keyvalue.web.controller;
 
-import com.google.gson.Gson;
 import com.keyvalue.web.model.*;
 import com.keyvalue.web.model.Comunicacao.VTripla;
 import com.keyvalue.web.services.ClientService;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Objects;
 
-import javax.print.DocFlavor.STRING;
 
 // import jdk.javadoc.internal.doclets.toolkit.resources.doclets;
 
@@ -217,7 +207,7 @@ public class ClientController {
     @RequestMapping(value = "/client/TestSet", method = RequestMethod.PUT)
     @ResponseBody
     public String TestSet(@RequestParam("k") String k, @RequestParam("vers") long v, @RequestParam("ts") long ts,
-            @RequestParam("data") String data) {
+            @RequestParam("data") String data,  @RequestParam("versN") long versN) {
 
         // clientService.testAndSet(k);
         // System.out.println("TestSet METHOD : " + k + " - " + d);
@@ -228,13 +218,8 @@ public class ClientController {
         String dados = null;
         long timestampInput = System.currentTimeMillis() / 1000;
         // Calls
-        Comunicacao.Reply replyServerGet = clientService.get(k.getBytes());
-        VTripla replyGet = replyServerGet.getValue();
-        version = replyGet.getVersion();
-        timestamp = replyGet.getTimestamp();
-        dados = new String(replyGet.getData().toStringUtf8());
 
-        Comunicacao.Reply replyServer = clientService.testAndSet(k.getBytes(), version, ts, data.getBytes(), v);
+        Comunicacao.Reply replyServer = clientService.testAndSet(k.getBytes(), versN, ts, data.getBytes(), v);
 
         String replyError = replyServer.getError();
         String message = "";

@@ -70,10 +70,16 @@
                             <input type="text" class="form-control" id="K_FIELD_NUMBER">
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-3">
                         <div class="form-group">
                             <label for="VS_FIELD_NUMBER">Version</label>
                             <input type="text" class="form-control" id="VS_FIELD_NUMBER">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="VSN_FIELD_NUMBER">New Version</label>
+                            <input type="text" class="form-control" id="VSN_FIELD_NUMBER">
                         </div>
                     </div>
                 </div>
@@ -123,7 +129,7 @@
                     contentType: 'application/json',
                     url: '/client/TestSet?k=' + $("#K_FIELD_NUMBER").val() + "&vers=" + $("#VS_FIELD_NUMBER")
                         .val() +
-                        "&ts=" + $("#TS_FIELD_NUMBER").val() + "&data=" + $("#D_FIELD_NUMBER").val(),
+                        "&ts=" + $("#TS_FIELD_NUMBER").val() + "&data=" + $("#D_FIELD_NUMBER").val() + "&versN="+ $("#VSN_FIELD_NUMBER").val(),
                     cache: false,
                     timeout: 600000,
                     success: function (response) {
